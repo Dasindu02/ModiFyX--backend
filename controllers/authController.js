@@ -33,11 +33,21 @@ export const loginValidation = [
 // REGISTER
 export const register = async (req, res) => {
   try {
+    console.log("Registration attempt:", req.body);
+    
     const errors = validationResult(req);
-    if (!errors.isEmpty())
+    if (!errors.isEmpty()) {
+      console.log("Validation errors:", errors.array());
       return res.status(400).json({ success: false, message: errors.array()[0].msg });
+    }
 
     const { fullName, email, password } = req.body;
+
+    // Check if user already exists (additional check)
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Email already exists" });
+    }
 
     const user = await User.create({
       fullName,
@@ -45,32 +55,66 @@ export const register = async (req, res) => {
       password
     });
 
+    console.log("User created successfully:", user.email);
+
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: { user }
+      data: {
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email
+        }
+      }
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Registration error details:", err);
+    
+    // Handle specific MongoDB errors
+    if (err.code === 11000) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email already exists" 
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error during registration",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
 
 // LOGIN
+// LOGIN
 export const login = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false, 
+        message: errors.array()[0].msg 
+      });
+    }
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
     }
 
     const isMatch = await user.comparePassword(password);
-
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -78,11 +122,21 @@ export const login = async (req, res) => {
     });
 
     res.json({
+      success: true,
       message: "Login successful",
       token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email
+      }
     });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    console.error("Login error:", err);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error during login" 
+    });
   }
 };
 
