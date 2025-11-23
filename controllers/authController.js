@@ -1,5 +1,7 @@
 import { body, validationResult } from "express-validator";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+
 
 // VALIDATIONS
 export const registerValidation = [
@@ -57,29 +59,34 @@ export const register = async (req, res) => {
 // LOGIN
 export const login = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(400).json({ success: false, message: errors.array()[0].msg });
-
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) return res.status(400).json({ success: false, message: "Invalid credentials" });
+    const user = await User.findOne({ email });
 
-    const match = await user.comparePassword(password);
-    if (!match) return res.status(400).json({ success: false, message: "Invalid credentials" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.json({
-      success: true,
-      message: "Login successful",
-      data: { user }
+    const isMatch = await user.comparePassword(password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
 
+    res.json({
+      message: "Login successful",
+      token,
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
 
 // ME
 export const getMe = (req, res) => {
