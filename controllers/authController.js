@@ -128,7 +128,12 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         fullName: user.fullName,
-        email: user.email
+        email: user.email,
+        phone: user.phone,
+        age: user.age,
+        district: user.district,
+        vehicleModel: user.vehicleModel,
+        registrationDate: user.registrationDate
       }
     });
   } catch (err) {
@@ -137,6 +142,31 @@ export const login = async (req, res) => {
       success: false, 
       message: "Server error during login" 
     });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updates = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updates,
+      { new: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("UPDATE ERROR:", error);
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
