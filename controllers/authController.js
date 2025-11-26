@@ -121,6 +121,11 @@ export const login = async (req, res) => {
       expiresIn: "7d",
     });
 
+     const previousLogin = user.lastLogin;
+
+    user.lastLogin = new Date();
+    await user.save();
+
     res.json({
       success: true,
       message: "Login successful",
@@ -133,7 +138,8 @@ export const login = async (req, res) => {
         age: user.age,
         district: user.district,
         vehicleModel: user.vehicleModel,
-        registrationDate: user.registrationDate
+        registrationDate: user.registrationDate,
+        lastLogin: previousLogin
       }
     });
   } catch (err) {
