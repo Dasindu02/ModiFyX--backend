@@ -138,7 +138,7 @@ export const login = async (req, res) => {
         age: user.age,
         district: user.district,
         vehicleModel: user.vehicleModel,
-        registrationDate: user.registrationDate,
+        registrationNo: user.registrationNo,
         lastLogin: previousLogin
       }
     });

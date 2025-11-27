@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema(
     age: { type: Number },
     district: { type: String },
     vehicleModel: { type: String },
-    registrationDate: { type: String }
+    registrationNo: { type: String }
   },
   { timestamps: true }
 );
