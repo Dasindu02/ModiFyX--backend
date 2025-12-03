@@ -1,3 +1,4 @@
+// api/index.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -13,12 +14,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Root route for testing
 app.get("/", (req, res) => res.send("API is working!"));
+
+// Auth routes
 app.use("/api/auth", authRoutes);
 
 // Connect to MongoDB
-connectDB().catch(err => console.error("MongoDB connection failed:", err));
+connectDB().catch(err => console.error(err));
 
-// Export the serverless handler
+// Export serverless handler for Vercel
 export const handler = serverless(app);
