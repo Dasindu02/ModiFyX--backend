@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import authRoutes from "./routes/authRoutes.js";
+import authRoutes from "../routes/authRoutes.js";
 
 dotenv.config();
 
@@ -21,20 +21,15 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => {
     console.log("❌ MongoDB Connection Error:", err);
-    process.exit(1);
   });
 
-  app.use("/api/auth", authRoutes);
+// Routes
+app.use("/api/auth", authRoutes);
 
-// Test route
 app.get("/", (req, res) => {
-  res.json({ 
-    message: "ModifyX Backend Running Successfully!",
-    status: "active"
-  });
+  res.json({ message: "ModifyX Backend Running Successfully", status: "active" });
 });
 
-// Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
@@ -43,22 +38,12 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: "Something went wrong!",
-    message: process.env.NODE_ENV === "development" ? err.message : undefined
-  });
-});
-
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });
 
-// Start server
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// ❌ REMOVE: app.listen()
+// Vercel does NOT allow listening on a port
+
+export default app;
