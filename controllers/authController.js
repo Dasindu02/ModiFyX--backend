@@ -91,6 +91,17 @@ export const register = async (req, res) => {
 // LOGIN
 export const login = async (req, res) => {
   try {
+    // === CORS headers ===
+    res.setHeader("Access-Control-Allow-Origin", "https://www.modifyx.click"); // your frontend domain
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    // Handle preflight request
+    if (req.method === "OPTIONS") {
+      return res.status(200).end();
+    }
+
+    // === Existing login code ===
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ 
@@ -121,7 +132,7 @@ export const login = async (req, res) => {
       expiresIn: "7d",
     });
 
-     const previousLogin = user.lastLogin;
+    const previousLogin = user.lastLogin;
 
     user.lastLogin = new Date();
     await user.save();
@@ -142,6 +153,7 @@ export const login = async (req, res) => {
         lastLogin: previousLogin
       }
     });
+
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ 
@@ -150,6 +162,7 @@ export const login = async (req, res) => {
     });
   }
 };
+
 
 export const updateProfile = async (req, res) => {
   try {
