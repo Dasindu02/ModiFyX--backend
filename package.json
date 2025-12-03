@@ -1,23 +1,11 @@
 {
-  "name": "modifyx--backend",
+  "name": "modifyx-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "api/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon api/index.js",
+    "start": "node api/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Dasindu02/ModiFyX--backend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Dasindu02/ModiFyX--backend/issues"
-  },
-  "homepage": "https://github.com/Dasindu02/ModiFyX--backend#readme",
-  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
