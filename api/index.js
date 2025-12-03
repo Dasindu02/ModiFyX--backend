@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import authRoutes from "../routes/authRoutes.js";
+import { connectToDatabase } from "./db.js";
 
 dotenv.config();
 
@@ -14,14 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection
-const MONGO_URL = process.env.MONGO_URI;
-
-mongoose
-  .connect(MONGO_URL)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => {
-    console.log("❌ MongoDB Connection Error:", err);
-  });
+await connectToDatabase(process.env.MONGO_URI);
+console.log("✅ MongoDB Connected");
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -33,8 +27,7 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
-    timestamp: new Date().toISOString(),
-    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected"
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -42,8 +35,5 @@ app.get("/health", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });
-
-// ❌ REMOVE: app.listen()
-// Vercel does NOT allow listening on a port
 
 export default app;
