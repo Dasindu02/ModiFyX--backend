@@ -5,8 +5,21 @@
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "nodemon api/index.js"
+    "dev": "node api/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dasindu02/ModiFyX--backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dasindu02/ModiFyX--backend/issues"
+  },
+  "homepage": "https://github.com/Dasindu02/ModiFyX--backend#readme",
+  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
@@ -16,9 +29,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0",
     "multer": "^2.0.2",
+    "serverless-http": "^4.0.0",
     "sharp": "^0.34.5",
-    "three": "^0.181.2",
-    "serverless-http": "^3.2.0"
+    "three": "^0.181.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
