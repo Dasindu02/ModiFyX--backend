@@ -1,34 +1,29 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
-import authRoutes from "../routes/authRoutes.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+dotenv.config(); // Load environment variables from .env
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// connect to MongoDB 
-let cached = global.mongoose;
+// MongoDB connection
+const MONGO_URL = process.env.MONGO_URI;
 
-if (!cached) cached = global.mongoose = { conn: null, promise: null };
+mongoose
+  .connect(MONGO_URL) // no extra options needed in Mongoose 7+
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.log("❌ MongoDB Error:", err));
 
-async function connectDB() {
-  if (cached.conn) return cached.conn;
+// Simple route to test
+app.get("/", (req, res) => {
+  res.send("ModifyX Backend Running Successfully!");
+});
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URI).then((mongoose) => {
-      return mongoose;
-    });
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
-
-app.use("/auth", authRoutes);
-
-// Export handler for Vercel
-export default async function handler(req, res) {
-  await connectDB();
-  return app(req, res);
-}
+// Start server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
