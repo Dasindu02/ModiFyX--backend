@@ -1,4 +1,3 @@
-// api/index.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -14,16 +13,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-connectDB();
-
-// Root route (optional)
-app.get("/", (req, res) => {
-  res.send("API is working!");
-});
-
-// API routes
+// Routes
+app.get("/", (req, res) => res.send("API is working!"));
 app.use("/api/auth", authRoutes);
+
+// Connect to MongoDB
+connectDB().catch(err => console.error("MongoDB connection failed:", err));
 
 // Export the serverless handler
 export const handler = serverless(app);
