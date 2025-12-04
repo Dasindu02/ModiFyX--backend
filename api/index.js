@@ -1,4 +1,3 @@
-// api/index.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -8,19 +7,17 @@ import serverless from "serverless-http";
 
 dotenv.config();
 
-// ❗ Connect only once (global, outside requests)
+// connect only once
 connectDB();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Root route
 app.get("/", (req, res) => {
-  res.send("API is working!");
+  res.send("API root OK");
 });
 
-// Auth routes
 app.use("/api/auth", authRoutes);
 
 export default serverless(app);
