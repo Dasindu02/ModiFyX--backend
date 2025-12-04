@@ -11,23 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Middleware to connect DB on every request (reuses cached connection)
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error("DB connection failed:", err);
-    res.status(500).send("Database connection failed");
-  }
-});
+// Connect to DB once (before exporting the handler)
+await connectDB();
 
-// Test route
 app.get("/", (req, res) => {
   res.send("API root OK");
 });
 
-// Auth routes
 app.use("/api/auth", authRoutes);
 
 export default serverless(app);
