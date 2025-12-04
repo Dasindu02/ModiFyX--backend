@@ -11,8 +11,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to DB once (before exporting the handler)
-await connectDB();
+// Start DB connection (do NOT await here)
+const dbReady = connectDB();
+
+// Ensure DB is connected before handling requests
+app.use(async (req, res, next) => {
+  await dbReady;
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send("API root OK");

@@ -1,19 +1,17 @@
 import mongoose from "mongoose";
 
-let cached = global.mongoose; // global cache
+let cached = global.mongoose;
+
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
 const connectDB = async () => {
-  if (cached.conn) {
-    return cached.conn; // use existing connection
-  }
+  if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false, // avoid buffering during cold start
-    };
+    const opts = { bufferCommands: false };
+
     cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
       return mongoose;
     });
