@@ -8,31 +8,19 @@ import serverless from "serverless-http";
 
 dotenv.config();
 
+// ❗ Connect only once (global, outside requests)
+connectDB();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Root route
-app.get("/", async (req, res) => {
-  try {
-    await connectDB(); // connect to MongoDB per request
-    res.send("API is working!");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("DB connection failed");
-  }
+app.get("/", (req, res) => {
+  res.send("API is working!");
 });
 
 // Auth routes
-app.use("/api/auth", async (req, res, next) => {
-  try {
-    await connectDB(); // connect per request
-    next();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("DB connection failed");
-  }
-}, authRoutes);
+app.use("/api/auth", authRoutes);
 
-// Export serverless handler
 export default serverless(app);
